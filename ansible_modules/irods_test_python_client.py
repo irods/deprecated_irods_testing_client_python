@@ -16,6 +16,7 @@ def run_tests(module, result):
     local_client_git_dir = os.path.expanduser('~/jargon')
     git_clone(module, local_client_git_dir)
 
+    module.run_command(['sudo', 'chmod', '-R', '777', '/etc/irods'], check_rc=True)
     module.run_command('python-coverage run irods/test/runner.py', cwd=local_client_git_dir, check_rc=True)
     module.run_command('python-coverage report', cwd=local_client_git_dir, check_rc=True)
     module.run_command('python-coverage xml', cwd=local_client_git_dir, check_rc=True)
@@ -34,6 +35,7 @@ def git_clone(module, local_dir, commit=None):
 
 def gather_xml_reports(module, local_client_git_dir):
     shutil.copy(os.path.join(local_client_git_dir, 'coverage.xml'), module.params['output_directory'])
+    shutil.copytree(os.path.join(local_client_git_dir, 'test-reports'), os.path.join(module.params['output_directory'], 'test-reports'))
 
 def main():
     module = AnsibleModule(
